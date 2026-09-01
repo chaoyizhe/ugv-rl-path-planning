@@ -1,0 +1,418 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import os
+import rospy
+import numpy as np
+import torch
+
+from dqn_agent import DQNAgent
+from jackal_env import JackalEnv
+
+
+# ============================================================
+# 参数
+# ============================================================
+
+EPISODES = 500
+
+MAX_STEPS = 300
+
+TARGET_UPDATE = 20
+
+MODEL_DIR = os.path.expanduser(
+    "~/catkin_ws/src/jackal_dqn_env/models"
+)
+
+BEST_MODEL = os.path.join(
+    MODEL_DIR,
+    "best_model.pth"
+)
+
+LAST_MODEL = os.path.join(
+    MODEL_DIR,
+    "last_model.pth"
+)
+
+
+# ============================================================
+# 创建模型目录
+# ============================================================
+
+if not os.path.exists(MODEL_DIR):
+
+    os.makedirs(
+        MODEL_DIR
+    )
+
+
+# ============================================================
+# 主程序
+# ============================================================
+
+def main():
+
+    rospy.init_node(
+        "dqn_training"
+    )
+
+
+    print("")
+    print("===================================", sep="")
+    print("      Jackal DQN Training", sep="")
+    print("===================================", sep="")
+    print("", sep="")
+
+
+    # --------------------------------------------------------
+    # 环境
+    # --------------------------------------------------------
+
+    env = JackalEnv()
+
+
+    # --------------------------------------------------------
+    # Agent
+    # --------------------------------------------------------
+
+    agent = DQNAgent()
+
+
+    # --------------------------------------------------------
+    # 最佳奖励
+    # --------------------------------------------------------
+
+    best_reward = -float("inf")
+
+    best_success = False
+
+
+    # ========================================================
+    # 开始训练
+    # ========================================================
+
+    for episode in range(
+        1,
+        EPISODES + 1
+    ):
+
+
+        print("")
+        print("-----------------------------------", sep="")
+        print(
+            "Episode:",
+            episode,
+            "/",
+            EPISODES
+        )
+        print("-----------------------------------", sep="")
+
+
+        # ----------------------------------------------------
+        # reset
+        # ----------------------------------------------------
+
+        state = env.reset()
+
+
+        if state is None:
+
+            rospy.logwarn(
+                "state is None"
+            )
+
+            continue
+
+
+        state = np.asarray(
+            state,
+            dtype=np.float32
+        )
+
+
+        total_reward = 0
+
+        losses = []
+
+        success = False
+
+
+        # ====================================================
+        # 一个 episode
+        # ====================================================
+
+        for step in range(
+            MAX_STEPS
+        ):
+
+
+            # ------------------------------------------------
+            # 选择动作
+            # ------------------------------------------------
+
+            action = agent.choose_action(
+                state
+            )
+
+
+            # ------------------------------------------------
+            # 执行动作
+            # ------------------------------------------------
+
+            next_state, reward, done = env.step(
+                action
+            )
+
+
+            # ------------------------------------------------
+            # 防止异常
+            # ------------------------------------------------
+
+            if next_state is None:
+
+                rospy.logwarn(
+                    "next_state is None"
+                )
+
+                break
+
+
+            next_state = np.asarray(
+                next_state,
+                dtype=np.float32
+            )
+
+
+            # ------------------------------------------------
+            # 保存经验
+            # ------------------------------------------------
+
+            agent.store_transition(
+                state,
+                action,
+                reward,
+                next_state,
+                done
+            )
+
+
+            # ------------------------------------------------
+            # 学习
+            # ------------------------------------------------
+
+            loss = agent.learn()
+
+
+            if loss is not None:
+
+                losses.append(
+                    loss
+                )
+
+
+            # ------------------------------------------------
+            # 状态更新
+            # ------------------------------------------------
+
+            state = next_state
+
+            total_reward += reward
+
+
+            # ------------------------------------------------
+            # 到达目标
+            # ------------------------------------------------
+
+            distance = np.sqrt(
+                (env.x - env.GOAL[0]) ** 2
+                +
+                (env.y - env.GOAL[1]) ** 2
+            ) if hasattr(env, "GOAL") else np.sqrt(
+                (env.x - 9.5) ** 2
+                +
+                (env.y - 9.5) ** 2
+            )
+
+
+            if distance < 0.5:
+
+                success = True
+
+                break
+
+
+            # ------------------------------------------------
+            # episode结束
+            # ------------------------------------------------
+
+            if done:
+
+                break
+
+
+        # ====================================================
+        # episode结束
+        # ====================================================
+
+        agent.update_epsilon()
+
+
+        # ----------------------------------------------------
+        # target network
+        # ----------------------------------------------------
+
+        if episode % TARGET_UPDATE == 0:
+
+            agent.update_target_network()
+
+
+        # ----------------------------------------------------
+        # 平均loss
+        # ----------------------------------------------------
+
+        if len(losses) > 0:
+
+            avg_loss = np.mean(
+                losses
+            )
+
+        else:
+
+            avg_loss = 0
+
+
+        # ----------------------------------------------------
+        # 输出
+        # ----------------------------------------------------
+
+        print("")
+        print(
+            "Episode:",
+            episode
+        )
+
+        print(
+            "Steps:",
+            step + 1
+        )
+
+        print(
+            "Reward:",
+            round(total_reward, 3)
+        )
+
+        print(
+            "Average Loss:",
+            round(avg_loss, 6)
+        )
+
+        print(
+            "Epsilon:",
+            round(agent.epsilon, 4)
+        )
+
+        print(
+            "Success:",
+            success
+        )
+
+
+        # ====================================================
+        # 保存最佳模型
+        # 优先保存成功到达目标的模型
+        # ====================================================
+
+
+        if success:
+
+            # 成功模型优先
+
+            if (not best_success) or (total_reward > best_reward):
+
+
+                best_reward = total_reward
+
+                best_success = True
+
+
+                agent.save(
+                    BEST_MODEL
+                )
+
+
+                print("")
+                print(
+                    "***** 保存成功路径模型 *****"
+                )
+
+                print(
+                    "Reward:",
+                    best_reward
+                )
+
+                print(
+                    "Path:",
+                    BEST_MODEL
+                )
+
+        elif not best_success:
+
+
+            # 如果目前还没有成功模型
+            # 保存奖励最高的失败模型作为备用
+
+
+            if total_reward > best_reward:
+
+
+                best_reward = total_reward
+
+
+                agent.save(
+                    BEST_MODEL
+                )
+
+
+                print("")
+                print(
+                    "***** 保存临时最佳模型 *****"
+                )
+
+                print(
+                    "Reward:",
+                    best_reward
+                )
+
+
+        # ====================================================
+        # 保存最后模型
+        # ====================================================
+
+        agent.save(
+            LAST_MODEL
+        )
+
+
+    # ========================================================
+    # 训练结束
+    # ========================================================
+
+    print("")
+    print("===================================", sep="")
+    print("        Training Finished", sep="")
+    print("===================================", sep="")
+
+    print(
+        "Best reward:",
+        best_reward
+    )
+
+    print(
+        "Best model:",
+        BEST_MODEL
+    )
+
+
+if __name__ == "__main__":
+
+    main()
