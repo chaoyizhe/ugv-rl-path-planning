@@ -1,0 +1,378 @@
+<?xml version="1.0" ?>
+<!-- ============================================================
+     Jackal DQN 路径规划 — 障碍物世界
+     根据 jackal_env.py 中的 10x10 MAP 自动生成
+     地图:  起点 (0.5,0.5)  终点 (9.5,9.5)
+     障碍:  每个 '1' 格子生成一个 0.9x0.9x0.8 的墙体方块
+     ============================================================ -->
+<sdf version="1.6">
+  <world name="jackal_dqn_world">
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- 地面 -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- 起点/终点标识用平面标记（可选，仅可视化） -->
+    <model name="goal_marker">
+      <static>true</static>
+      <pose>9.5 9.5 0.02 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.5 0.5 0.001</size></box></geometry>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.5 0.5 0.001</size></box></geometry>
+          <material><ambient>0.0 1.0 0.0 1</ambient>
+                     <diffuse>0.0 1.0 0.0 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="start_marker">
+      <static>true</static>
+      <pose>0.5 0.5 0.02 0 0 0</pose>
+      <link name="link">
+        <visual name="visual">
+          <geometry><box><size>0.5 0.5 0.001</size></box></geometry>
+          <material><ambient>0.0 0.5 1.0 1</ambient>
+                     <diffuse>0.0 0.5 1.0 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ==================== 以下为障碍物 ====================
+         MAP 语义: 数组元素 MAP[row][col]=1 表示障碍
+         row -> Gazebo y 坐标, col -> Gazebo x 坐标
+         障碍中心 = (col+0.5, row+0.5) -->
+
+
+    <model name="obs_1_6">
+      <static>true</static>
+      <link name="link">
+        <pose>6.5 1.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_1_7">
+      <static>true</static>
+      <link name="link">
+        <pose>7.5 1.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_1_9">
+      <static>true</static>
+      <link name="link">
+        <pose>9.5 1.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_2_4">
+      <static>true</static>
+      <link name="link">
+        <pose>4.5 2.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_3_2">
+      <static>true</static>
+      <link name="link">
+        <pose>2.5 3.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_3_4">
+      <static>true</static>
+      <link name="link">
+        <pose>4.5 3.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_3_6">
+      <static>true</static>
+      <link name="link">
+        <pose>6.5 3.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_3_8">
+      <static>true</static>
+      <link name="link">
+        <pose>8.5 3.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_4_0">
+      <static>true</static>
+      <link name="link">
+        <pose>0.5 4.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_4_2">
+      <static>true</static>
+      <link name="link">
+        <pose>2.5 4.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_4_8">
+      <static>true</static>
+      <link name="link">
+        <pose>8.5 4.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_5_4">
+      <static>true</static>
+      <link name="link">
+        <pose>4.5 5.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_6_1">
+      <static>true</static>
+      <link name="link">
+        <pose>1.5 6.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_6_6">
+      <static>true</static>
+      <link name="link">
+        <pose>6.5 6.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_6_7">
+      <static>true</static>
+      <link name="link">
+        <pose>7.5 6.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_6_9">
+      <static>true</static>
+      <link name="link">
+        <pose>9.5 6.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_7_1">
+      <static>true</static>
+      <link name="link">
+        <pose>1.5 7.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_7_3">
+      <static>true</static>
+      <link name="link">
+        <pose>3.5 7.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_8_3">
+      <static>true</static>
+      <link name="link">
+        <pose>3.5 8.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_8_5">
+      <static>true</static>
+      <link name="link">
+        <pose>5.5 8.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_8_7">
+      <static>true</static>
+      <link name="link">
+        <pose>7.5 8.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_8_8">
+      <static>true</static>
+      <link name="link">
+        <pose>8.5 8.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="obs_9_0">
+      <static>true</static>
+      <link name="link">
+        <pose>0.5 9.5 0.4 0 0 0</pose>
+        <collision name="collision">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.9 0.9 0.8</size></box></geometry>
+          <material><ambient>0.4 0.4 0.4 1</ambient></material>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
