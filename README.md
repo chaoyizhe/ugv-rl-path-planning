@@ -8,9 +8,9 @@
 
 | 文件 | 作用 |
 |------|------|
-| `fengzhen/jackal_env.txt` | Gazebo 仿真环境封装 (JackalEnv)：地图、雷达、碰撞检测、奖励函数 |
-| `fengzhen/test.txt` | 加载 `best_model.pth` 进行测试/复现 |
-| `fengzhen/train.txt` | DQN 训练主程序 (500 episode) |
+| `fangzhen/jackal_env.txt` | Gazebo 仿真环境封装 (JackalEnv)：地图、雷达、碰撞检测、奖励函数 |
+| `fangzhen/test.txt` | 加载 `best_model.pth` 进行测试/复现 |
+| `fangzhen/train.txt` | DQN 训练主程序 (500 episode) |
 
 ## 环境
 
