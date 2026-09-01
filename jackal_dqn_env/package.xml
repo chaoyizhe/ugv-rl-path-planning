@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>jackal_dqn_env</name>
+  <version>0.1.0</version>
+  <description>Jackal DQN path planning experiment environment</description>
+  <maintainer email="leng@dev.local">leng</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>gazebo_msgs</depend>
+  <depend>gazebo_ros</depend>
+  <depend>jackal_gazebo</depend>
+
+  <export>
+    <gazebo_ros plugin_path="${prefix}/plugins"/>
+  </export>
+</package>
