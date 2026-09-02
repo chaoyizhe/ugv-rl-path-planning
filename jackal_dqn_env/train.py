@@ -18,7 +18,7 @@ from jackal_env import JackalEnv
 
 EPISODES = 500
 
-MAX_STEPS = 300
+MAX_STEPS = 500  # V3: 300 -> 500，给更多步数走完地图
 
 TARGET_UPDATE = 20
 
